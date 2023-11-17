@@ -6,9 +6,11 @@
  * try doing something like that...
  */
 
+import java.util.Random;
+
 public class Sorts{
-    private static int swaps,comparisons;
-    public static String lastSort;
+    private static int swaps,comparisons,shuffles=0,sortAniStep;
+    public static String lastSort,sortAniFrames;
     private static long elapsedTime;
     public static int srtCount;
     public static SortHistory sortLog;
@@ -109,6 +111,23 @@ public class Sorts{
         return arr;
     }
 
+    public static int[] bogosort(){
+        int[] arr = App.set;
+        lastSort = "Bogosort";
+        swaps=0;comparisons=0;sortAniStep=0;
+        srtCount++;
+        buildSortAni();
+        long startTime = System.nanoTime();
+
+        while(!isSorted(arr)){
+            sortAnimation();
+            shuffle(arr);
+        }
+
+        elapsedTime = System.nanoTime() - startTime;
+        return arr;
+    }
+
 
     //--- OTHER FUNCTIONS ---\\\
     private static int[] swap(int[] set, int loc1, int loc2){
@@ -126,16 +145,21 @@ public class Sorts{
             App.petc();
             return;
         }
-        System.out.println("\n-----[SORT STATS]-----\nSort type: "+lastSort+"\nSwaps: "+swaps+"\nComparisons: "+comparisons+"\nTime: "+etToString());
+        int size = App.set.length;
+        System.out.println("\n-----[SORT STATS]-----\nSort type: "+lastSort+"\nSize: "+size+"\nSwaps: "+swaps+"\nComparisons: "+comparisons);
+        if(shuffles != 0){
+            System.out.println("Shuffles: "+shuffles);
+        }
+        System.out.println("Time: "+etToString());
         sortLog.logStats(swaps, comparisons, etToString());
         App.petc();
         System.out.println("--------------------");
     }
 
-    public static String[] getStatsString(){
+    /* private static String[] getStatsString(){
         String sortStatsString[] = {lastSort,Integer.toString(swaps),Integer.toString(comparisons),etToString()}; //might add timestamps later
         return sortStatsString;
-    }
+    } */
 
     private static String etToString(){
         String etString;
@@ -147,5 +171,51 @@ public class Sorts{
             etString = (s+" ms");
         }
         return etString;
+    }
+
+    private static int[] shuffle(int[] array){
+        shuffles++;
+        Random ran = new Random();
+        for(int i=0; i<array.length; i++){
+            swaps++;
+            int randomIndexToSwap = ran.nextInt(array.length);
+            int temp = array[randomIndexToSwap];
+            array[randomIndexToSwap] = array[i];
+            array[i] = temp;
+        }
+        return array;
+    }
+
+    private static boolean isSorted(int[] array){
+        for(int i=1; i<array.length; i++){
+            comparisons++;
+            if(array[i]<array[i-1]){return false;}
+        }
+        return true;
+    }
+
+    private static void sortAnimation(){
+        try{
+            System.out.print(sortAniFrames.substring(sortAniStep,sortAniStep+1));
+            sortAniStep++;
+            if((sortAniStep+1)<sortAniFrames.length()){
+                sortAniStep++;
+            }else{
+                sortAniStep=0;
+                System.out.println();
+            }
+        }catch (Exception e){
+            //Todo: catch any errors if AniFrames is not built.
+            System.out.println("An Error.");
+            e.getStackTrace();
+        }
+    }
+
+    private static void buildSortAni(){
+        sortAniFrames = "S...O...R...T...I...N...G.........";
+        for(int i=0; i<lastSort.length(); i++){
+            char c = Character.toUpperCase(lastSort.charAt(i));
+            sortAniFrames = (sortAniFrames + Character.toString(c) + "...");
+        }
     }
 }

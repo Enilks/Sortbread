@@ -31,7 +31,7 @@ public class SortHistory {
         }
     }
 
-    public void logStats(int swaps, int comparisons, String etString){
+    public void logStats(int swaps, int comparisons, String etString){ //missing: shuffles (bogo)
         try {
             //BufferedWriter writer = new BufferedWriter(new FileWriter(filePath,true));
             FileWriter writer = new FileWriter(filePath, true); //creates a file writer which will append to the file

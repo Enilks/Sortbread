@@ -13,6 +13,7 @@ public class App {
                                       "Selection Sort",
                                       "Selection Sort w/ Max",
                                       "Insertion Sort",
+                                      "Bogosort",
                                       "View Set",
                                       "New Set",
                                       "Shuffle Set",
@@ -68,6 +69,10 @@ public class App {
                     sortedSet = Sorts.insertion();
                     sortComplete(sortedSet);
                     break;
+                case "Bogosort":
+                    sortedSet = Sorts.bogosort();
+                    sortComplete(sortedSet);
+                    break;
                 case "View Set":
                     System.out.println("\nSet -- Length "+set.length+": "+Arrays.toString(set));
                     petc();
@@ -92,6 +97,10 @@ public class App {
         }
         scan.close();
         System.exit(0);
+    }
+
+    private static void setMenu(){
+        //Put all set-related options into their own sub-menu.
     }
 
     private static void defaultSet(){
