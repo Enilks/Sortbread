@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class Sorts{
     private static int swaps,comparisons,shuffles=0,sortAniStep;
-    public static String lastSort,sortAniFrames;
+    public static String lastSort,sortDesc,sortType,sortAniFrames;
     private static long elapsedTime;
     public static int srtCount;
     public static SortHistory sortLog;
@@ -20,6 +20,8 @@ public class Sorts{
         swaps = 0;
         comparisons=0;
         lastSort = "Bubble Sort";
+        sortType = "Exchange";
+        sortDesc = "The most basic sorting algorithm. (more).";
         srtCount++;
         long startTime = System.nanoTime();
         
@@ -41,9 +43,77 @@ public class Sorts{
         return set;
     }
 
+    public static int[] cocktailShaker(){
+        //aka bidirectional bubble sort or ripple sort
+        int[] arr = App.set;
+        swaps = 0;comparisons=0;
+        lastSort = "Cocktail Shaker Sort";
+        sortType = "Exchange";
+        sortDesc = "Also known as a 'bidirectional bubble sort,' a\n"+
+                   "cocktail sort is an extension of a bubble sort\n"+
+                   "because it operates in two directions. It improves\n"+
+                   "bubble sort by more quickly moving items to the\n"+
+                   "beginning of the list, but it provides only\n"+
+                   "marginal performance improvements. (Average\n"+
+                   "complexity: O(n^2).";
+        srtCount++;
+        long startTime = System.nanoTime();
+
+        boolean swapped = true;
+        int end = arr.length-1, start=0;
+
+        while(swapped){
+            swapped = false;
+
+            for(int i = start; i<end; ++i){
+                comparisons++;
+                if(arr[i] > arr[i+1]){
+                    swap(arr, i, i+1);
+                    swapped = true;
+                }
+            }
+            if(!swapped){break;}
+            swapped = false;
+            end--;
+            
+            for (int i=end-1; i>=start; i--){
+                comparisons++;
+                if(arr[i] > arr[i+1]){
+                    swap(arr, i, i+1);
+                    swapped = true;
+                }
+            }
+            start++;
+        }
+
+        elapsedTime = System.nanoTime() - startTime;
+        return arr;
+
+    }
+
+    public static int[] comb(){
+        int[] arr = App.set;
+        lastSort = "Comb Sort";
+        sortType = "Exchange";
+        sortDesc = "A comb sort is a simple sorting algorithm that repeatedly\n"+
+                   "divides an array into smaller subarrays, sorts them, then\n"+
+                   "combines the sorted subarrays back together to form a sorted\n"+
+                   "array. Average complexity: O(n*log(n)).";
+        swaps=0;comparisons=0;
+        srtCount++;
+        long startTime = System.nanoTime();
+
+        //yet to build lol
+
+        elapsedTime = System.nanoTime() - startTime;
+        return null;
+    }
+
     public static int[] selection(){
         int[] arr = App.set;
         lastSort = "Selection Sort";
+        sortType = "Selection";
+        sortDesc = "...";
         swaps=0;comparisons=0;
         srtCount++;
         long startTime = System.nanoTime();
@@ -70,6 +140,9 @@ public class Sorts{
         normal s-sort does) */
         int[] arr = App.set;
         lastSort = "Selection Sort w/ Max";
+        sortType = "Selection";
+        sortDesc = "A selection sort which also moves from the end to the front,\n"+
+                   "tracking the maximum value.";
         swaps=0;comparisons=0;
         srtCount++;
         long startTime = System.nanoTime();
@@ -95,6 +168,8 @@ public class Sorts{
     public static int[] insertion(){
         int[] arr = App.set;
         lastSort = "Insertion Sort";
+        sortType = "Insertion";
+        sortDesc = "...";
         swaps=0;comparisons=0;
         srtCount++;
         long startTime = System.nanoTime();
@@ -114,6 +189,11 @@ public class Sorts{
     public static int[] bogosort(){
         int[] arr = App.set;
         lastSort = "Bogosort";
+        sortType = "Transcendental";
+        sortDesc = "The worst sorting algorithm. Bogosort checks if the\n"+
+                   "set is sorted. If not, it shuffles the set, then\n"+
+                   "checks again. This repeats until the set is fully\n"+
+                   "sorted. Bogosort has an average performance of O(n*n!).";
         swaps=0;comparisons=0;sortAniStep=0;
         srtCount++;
         buildSortAni();
@@ -125,6 +205,7 @@ public class Sorts{
         }
 
         elapsedTime = System.nanoTime() - startTime;
+        System.out.println();
         return arr;
     }
 
@@ -146,7 +227,7 @@ public class Sorts{
             return;
         }
         int size = App.set.length;
-        System.out.println("\n-----[SORT STATS]-----\nSort type: "+lastSort+"\nSize: "+size+"\nSwaps: "+swaps+"\nComparisons: "+comparisons);
+        System.out.println("\n-----[SORT STATS]-----\nSort: "+lastSort+"\nType: "+sortType+"\nDescription:\n"+sortDesc+"\nSize: "+size+"\nSwaps: "+swaps+"\nComparisons: "+comparisons);
         if(shuffles != 0){
             System.out.println("Shuffles: "+shuffles);
         }
@@ -196,14 +277,18 @@ public class Sorts{
 
     private static void sortAnimation(){
         try{
-            System.out.print(sortAniFrames.substring(sortAniStep,sortAniStep+1));
-            sortAniStep++;
-            if((sortAniStep+1)<sortAniFrames.length()){
-                sortAniStep++;
-            }else{
-                sortAniStep=0;
-                System.out.println();
+            if(sortAniStep%1000000 ==0){
+                int i = sortAniStep/1000000;
+                System.out.print(sortAniFrames.substring(i,i+1));
             }
+            sortAniStep++;
+            if(sortAniStep%1000000 == 0){
+                int i = sortAniStep/1000000;
+                if(i+1 >= sortAniFrames.length()){
+                    sortAniStep=0;
+                    System.out.println();
+                }
+            }            
         }catch (Exception e){
             //Todo: catch any errors if AniFrames is not built.
             System.out.println("An Error.");
@@ -212,7 +297,7 @@ public class Sorts{
     }
 
     private static void buildSortAni(){
-        sortAniFrames = "S...O...R...T...I...N...G.........";
+        sortAniFrames = "S...O...R...T...I...N...G......";
         for(int i=0; i<lastSort.length(); i++){
             char c = Character.toUpperCase(lastSort.charAt(i));
             sortAniFrames = (sortAniFrames + Character.toString(c) + "...");
