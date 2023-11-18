@@ -10,14 +10,13 @@ import java.lang.StringIndexOutOfBoundsException;
 public class App {
     public static int set[];
     final static String menuOpts[] = {"Bubble Sort",
+                                      "Cocktail Shaker Sort",
+                                      "Comb Sort",
                                       "Selection Sort",
                                       "Selection Sort w/ Max",
                                       "Insertion Sort",
                                       "Bogosort",
-                                      "View Set",
-                                      "New Set",
-                                      "Shuffle Set",
-                                      "Sorting Stats",
+                                      "Set Menu",
                                       "Quit Program"};
     private static int sortedSet[];
 
@@ -57,6 +56,10 @@ public class App {
                     sortedSet = Sorts.bubble();
                     sortComplete(sortedSet);
                     break;
+                case "Cocktail Shaker Sort":
+                    sortedSet = Sorts.selection();
+                    sortComplete(sortedSet);
+                    break;
                 case "Selection Sort":
                     sortedSet = Sorts.selection();
                     sortComplete(sortedSet);
@@ -73,19 +76,8 @@ public class App {
                     sortedSet = Sorts.bogosort();
                     sortComplete(sortedSet);
                     break;
-                case "View Set":
-                    System.out.println("\nSet -- Length "+set.length+": "+Arrays.toString(set));
-                    petc();
-                    break;
-                case "New Set":
-                    generateSet();
-                    break;
-                case "Shuffle Set":
-                    System.out.println(); //spacer
-                    shuffleSet(); //shuffle set
-                    break;
-                case "Sorting Stats":
-                    Sorts.printSortStats();
+                case "Set Menu":
+                    setMenu();
                     break;
                 case "Quit Program":
                     runMenu = false;
@@ -100,7 +92,57 @@ public class App {
     }
 
     private static void setMenu(){
-        //Put all set-related options into their own sub-menu.
+        String setMenuOpts[] = {"View Set","New Set","Shuffle Set","Sorting Stats","Back"};
+        
+        boolean runMenu = true;
+        Scanner scan = new Scanner(System.in);
+        while(runMenu){
+            System.out.println("\n--------[MENU]--------");
+            for(int i=0; i<setMenuOpts.length; i++){System.out.println("   "+(i+1)+". "+setMenuOpts[i]);} //print menu opts
+            System.out.print("SELECT: ");
+            int s; //selection variable
+            while(true){ //Get user input
+                try {
+                    s = scan.nextInt();
+                    while(s < 1 || s > setMenuOpts.length){
+                        System.out.print("Invalid Selection. Try Again: ");
+                        s = scan.nextInt();
+                    }
+                }catch (InputMismatchException e){
+                    System.out.print(
+                        "You must input an integer associated with one of the listed menu\n"+
+                        "options (i.e. '1' for \""+setMenuOpts[0]+"\", or '"+(setMenuOpts.length)+"' to return).\n"+
+                        "ENTER MENU SELECTION: ");
+                        continue;
+                }
+                break;
+            }
+            
+            switch (setMenuOpts[s-1]){ // Menu
+                case "View Set":
+                    System.out.println("\nSet -- Length "+set.length+": "+Arrays.toString(set));
+                    petc();
+                    break;
+                case "New Set":
+                    generateSet();
+                    break;
+                case "Shuffle Set":
+                    System.out.println(); //spacer
+                    shuffleSet(); //shuffle set
+                    break;
+                case "Sorting Stats":
+                    Sorts.printSortStats();
+                    break;
+                case "Back":
+                    runMenu = false;
+                    break;
+                default:
+                    System.out.println("Selection unavailable.");
+                    petc();
+            }
+        }
+        //scan.close();
+        return;
     }
 
     private static void defaultSet(){
