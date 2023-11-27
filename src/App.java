@@ -47,34 +47,59 @@ public class App {
                 }
                 break;
             }
+            String sel = menuOpts[s-1]; //save a string for the menu selection
+
+            if(sel != "Set Menu"){ //if the user selected a sort...
+                sortedSet = copySet();
+            }
             
-            switch (menuOpts[s-1]){ // Menu
+            switch (sel){ // Menu
                 /* I should be able to optimize my menu commands to run sorts so I just need to write 
                  * "sortComplete(Sorts.bubble());" or whatever, but right now I don't feel like doing that.
                 */
                 case "Bubble Sort":
-                    sortedSet = Sorts.bubble();
-                    sortComplete(sortedSet);
+                    sortComplete(Sorts.bubble(sortedSet));
                     break;
                 case "Cocktail Shaker Sort":
-                    sortedSet = Sorts.selection();
-                    sortComplete(sortedSet);
+                    sortComplete(Sorts.selection(sortedSet));
                     break;
                 case "Selection Sort":
-                    sortedSet = Sorts.selection();
-                    sortComplete(sortedSet);
+                    sortComplete(Sorts.selection(sortedSet));
                     break;
                 case "Selection Sort w/ Max":
-                    sortedSet = Sorts.selectionAlt();
-                    sortComplete(sortedSet);
+                    sortComplete(Sorts.selectionAlt(sortedSet));
                     break;
                 case "Insertion Sort":
-                    sortedSet = Sorts.insertion();
-                    sortComplete(sortedSet);
+                    sortComplete(Sorts.insertion(sortedSet));
                     break;
                 case "Bogosort":
-                    sortedSet = Sorts.bogosort();
-                    sortComplete(sortedSet);
+                    int l = set.length;
+                    if(l>15){
+                        System.out.println("------------------[WARNING]------------------\n"+
+                                           "Bogosort is an extremely inefficient sort.\n"+
+                                           "Sets above a size of 15 take obscene amounts\n"+
+                                           "of time to compute. Please create a smaller\n"+
+                                           "set and try again.");
+                                           petc();
+                    }else if (l>12){
+                        System.out.print("------------------[WARNING]------------------\n"+
+                                           "Bogosort is an extremely inefficient sort.\n"+
+                                           "Because your sort contains over 12 values, it\n"+
+                                           "may take anywhere from one hour to [x] days\n"+
+                                           "to sort your algorithm. You can calculate the\n"+
+                                           "estimated runtime of a bogosort on your\n"+
+                                           "machine, using the time complexity calculator\n"+
+                                           "in Extras > Runtime Calculator > Bogosort.\n\n"+
+                                           "Do you understand the risks and wish to\n"+
+                                           "continue? ('y' to continue, 'n' to return): ");
+                        if(getYN()){
+                            System.out.println("\nCalculating Sort Time (n="+l+")..."); //depending on how I build the calculator, I may want to remove this later
+                            
+                        }else{
+                            return;
+                        }
+                    }
+                    sortComplete(Sorts.bogosort(sortedSet));
                     break;
                 case "Set Menu":
                     setMenu();
@@ -90,6 +115,8 @@ public class App {
         scan.close();
         System.exit(0);
     }
+
+    /* --- SET-RELATED METHODS --- */
 
     private static void setMenu(){
         String setMenuOpts[] = {"View Set","New Set","Shuffle Set","Sorting Stats","Back"};
@@ -219,10 +246,12 @@ public class App {
         System.out.println("Done!");
     }
 
+    /* --- OTHER METHODS --- */
+
     private static void sortComplete(int[] srtd){
         System.out.print("Sort Complete! View Set? (y/n): ");
         if(getYN()){
-            System.out.println("Sorted Set: "+Arrays.toString(srtd));
+            System.out.println("Sorted Set: "+Arrays.toString(set)+"\n"+Arrays.toString(srtd));
             Sorts.printSortStats();
         }
         System.out.print("Save Set? (y/n): ");
@@ -230,6 +259,7 @@ public class App {
             set = srtd;
             System.out.println("Saved!");
         }
+
     }
     
     public static boolean getYN(){ //add try loop to catch exceptions
@@ -270,4 +300,15 @@ public class App {
             }
         }
     }
+
+    public static int[] copySet(){
+        int l = set.length;
+        int a[] = new int[l];
+        for(int i=0; i<l; i++){
+            a[i] = set[i];
+        }
+        return a;
+    }
+
+    
 }

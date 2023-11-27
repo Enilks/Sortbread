@@ -7,6 +7,8 @@
  */
 
 import java.util.Random;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 
 public class Sorts{
     private static int swaps,comparisons,shuffles=0,sortAniStep;
@@ -15,8 +17,7 @@ public class Sorts{
     public static int srtCount;
     public static SortHistory sortLog;
 
-    public static int[] bubble(){
-        int[] set = App.set;
+    public static int[] bubble(int arr[]){
         swaps = 0;
         comparisons=0;
         lastSort = "Bubble Sort";
@@ -25,12 +26,12 @@ public class Sorts{
         srtCount++;
         long startTime = System.nanoTime();
         
-        for(int i= set.length -1; i>0; i--){
+        for(int i= arr.length -1; i>0; i--){
             boolean swapped=false;
             for(int j=0; j<i; j++){
                 comparisons++;
-                if(set[j] > set[j+1]){
-                    set = swap(set,j,j+1);
+                if(arr[j] > arr[j+1]){
+                    arr = swap(arr,j,j+1);
                     swapped=true;
                 }
             }
@@ -40,12 +41,11 @@ public class Sorts{
         }
 
         elapsedTime = System.nanoTime() - startTime; //calculate sorting time
-        return set;
+        return arr;
     }
 
-    public static int[] cocktailShaker(){
+    public static int[] cocktailShaker(int[] arr){
         //aka bidirectional bubble sort or ripple sort
-        int[] arr = App.set;
         swaps = 0;comparisons=0;
         lastSort = "Cocktail Shaker Sort";
         sortType = "Exchange";
@@ -91,8 +91,7 @@ public class Sorts{
 
     }
 
-    public static int[] comb(){
-        int[] arr = App.set;
+    public static int[] comb(int[] arr){
         lastSort = "Comb Sort";
         sortType = "Exchange";
         sortDesc = "A comb sort is a simple sorting algorithm that repeatedly\n"+
@@ -109,8 +108,7 @@ public class Sorts{
         return null;
     }
 
-    public static int[] selection(){
-        int[] arr = App.set;
+    public static int[] selection(int[] arr){
         lastSort = "Selection Sort";
         sortType = "Selection";
         sortDesc = "...";
@@ -133,12 +131,11 @@ public class Sorts{
         return arr;
     }
 
-    public static int[] selectionAlt(){ 
+    public static int[] selectionAlt(int[] arr){ 
         /*some wierd things: This sort does HALF the comparisons normal selection sort does. 
         However, sometimes, this sort ends up being SLOWER. Additionally, it had 500 swaps 
         when sorting an array of 500 (it should only have to do about 499, which is what the 
         normal s-sort does) */
-        int[] arr = App.set;
         lastSort = "Selection Sort w/ Max";
         sortType = "Selection";
         sortDesc = "A selection sort which also moves from the end to the front,\n"+
@@ -165,8 +162,53 @@ public class Sorts{
         return arr;
     }
 
-    public static int[] insertion(){
-        int[] arr = App.set;
+    public static int[] circle(int[] arr){
+
+        boolean swapped = true;
+        int lo = 0;
+        int hi = arr.length;
+
+        while(recCircle(arr,0,arr.length)){
+            ;
+        }
+
+        return arr;
+    }
+
+    public static boolean recCircle(int[] arr, int low, int high){
+        boolean swapped = false;
+
+        if (low == high){return false;}
+
+        /* Storing upper and lower bounds
+         * of list to be used later in the
+         * recursive case */
+        int lo = low, hi = high;
+        while (lo<hi){
+            if(arr[lo]>arr[hi]){
+                swap(arr,lo,hi);
+                swapped = true;
+            }
+            lo++;
+            hi--;
+        }
+
+        //in case array is odd sized:
+        if(lo == hi){
+            if(arr[lo]>arr[hi+1]){
+                swap(arr,low,hi+1);
+                swapped = true;
+            }
+        }
+
+        int mid = (high - low)/2;
+        boolean firstHalf = recCircle(arr,low,low+mid);
+        boolean secondHalf = recCircle(arr,low+mid+1,high);
+
+        return swapped || firstHalf || secondHalf;
+    }
+
+    public static int[] insertion(int[] arr){
         lastSort = "Insertion Sort";
         sortType = "Insertion";
         sortDesc = "...";
@@ -186,8 +228,7 @@ public class Sorts{
         return arr;
     }
 
-    public static int[] bogosort(){
-        int[] arr = App.set;
+    public static int[] bogosort(int[] arr){
         lastSort = "Bogosort";
         sortType = "Transcendental";
         sortDesc = "The worst sorting algorithm. Bogosort checks if the\n"+
@@ -221,18 +262,20 @@ public class Sorts{
     }
 
     public static void printSortStats(){
+        DecimalFormat df = new DecimalFormat("#,###");
         if(lastSort == null){
             System.out.println("\nNo Sort Found.");
             App.petc();
             return;
         }
         int size = App.set.length;
-        System.out.println("\n-----[SORT STATS]-----\nSort: "+lastSort+"\nType: "+sortType+"\nDescription:\n"+sortDesc+"\nSize: "+size+"\nSwaps: "+swaps+"\nComparisons: "+comparisons);
+        System.out.println("\n-----[SORT STATS]-----\nSort: "+lastSort+"\nType: "+sortType+"\nDescription:\n"+sortDesc+"\nSize: "+df.format(size)+"\nSwaps: "+df.format(swaps)+"\nComparisons: "+df.format(comparisons));
         if(shuffles != 0){
-            System.out.println("Shuffles: "+shuffles);
+            System.out.println("Shuffles: "+df.format(shuffles));
         }
         System.out.println("Time: "+etToString());
         sortLog.logStats(swaps, comparisons, etToString());
+        shuffles = 0;
         App.petc();
         System.out.println("--------------------");
     }
@@ -245,7 +288,17 @@ public class Sorts{
     private static String etToString(){
         String etString;
         double s = (double) elapsedTime / 1_000_000_000; //convert nanoseconds to seconds
-        if(s>=1){ //if the time amounts to 1 or more seconds, save as seconds
+        if(s>=60){ //if the time amounts to 1 or more seconds, save as seconds
+            int m = (int) s/60;
+            s = s-(m*60);
+            if(m<10){
+                etString = ("0"+m+":");
+            }else{
+                etString = (m+":");
+            }
+            DecimalFormat df = new DecimalFormat("##.###");
+            etString = etString + df.format(s);
+        }else if(s>=1){
             etString = (s+" s");
         }else{
             s = (double) elapsedTime / 1_000_000;
@@ -258,7 +311,6 @@ public class Sorts{
         shuffles++;
         Random ran = new Random();
         for(int i=0; i<array.length; i++){
-            swaps++;
             int randomIndexToSwap = ran.nextInt(array.length);
             int temp = array[randomIndexToSwap];
             array[randomIndexToSwap] = array[i];
