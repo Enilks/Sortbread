@@ -111,7 +111,9 @@ public class App {
         String s = command.substring(1);
         //System.out.println(); // spacer
         switch(s) {
+            case "v":
             case "view":
+            case "viewSet":
                 viewSet();
                 break;
             case "shuffle":
