@@ -30,15 +30,27 @@ public class App {
             System.out.println("\n--------[MENU]--------");
             for(int i=0; i<menuOpts.length; i++){System.out.println("   "+(i+1)+". "+menuOpts[i]);} //print menu opts
             System.out.print("SELECT: ");
-            int s; //selection variable
-            while(true){ //Get user input
+            int s=0; // selection variable
+
+            while(true) { // Get user input
+                String input = scan.nextLine();
+
+                if(input.charAt(0) == '/') { // Check for menu commands
+                    menuCommands(input);
+                    break;
+                }
+
                 try {
-                    s = scan.nextInt();
-                    while(s < 1 || s > menuOpts.length){
-                        System.out.print("Invalid Selection. Try Again: ");
-                        s = scan.nextInt();
+                    s = Integer.parseInt(input);
+
+                    if (s < 1 || s > menuOpts.length) {
+                        System.out.print(
+                        "You must input an integer associated with one of the listed menu\n"+
+                        "options (i.e. '1' for \""+menuOpts[0]+"\", or '"+(menuOpts.length)+"' for \"Quit Program\").\n"+
+                        "ENTER MENU SELECTION: ");
                     }
-                }catch (InputMismatchException e){ //bug fix - match this closer to the y/n exception set up?
+                } catch (NumberFormatException e) {
+                    // in the future, detecting if a command was attempted and explaining what went wrong could be helpful
                     System.out.print(
                         "You must input an integer associated with one of the listed menu\n"+
                         "options (i.e. '1' for \""+menuOpts[0]+"\", or '"+(menuOpts.length)+"' for \"Quit Program\").\n"+
@@ -47,49 +59,76 @@ public class App {
                 }
                 break;
             }
-            
-            switch (menuOpts[s-1]){ // Menu
-                /* I should be able to optimize my menu commands to run sorts so I just need to write 
-                 * "sortComplete(Sorts.bubble());" or whatever, but right now I don't feel like doing that.
-                */
-                case "Bubble Sort":
-                    sortedSet = Sorts.bubble();
-                    sortComplete(sortedSet);
-                    break;
-                case "Cocktail Shaker Sort":
-                    sortedSet = Sorts.selection();
-                    sortComplete(sortedSet);
-                    break;
-                case "Selection Sort":
-                    sortedSet = Sorts.selection();
-                    sortComplete(sortedSet);
-                    break;
-                case "Selection Sort w/ Max":
-                    sortedSet = Sorts.selectionAlt();
-                    sortComplete(sortedSet);
-                    break;
-                case "Insertion Sort":
-                    sortedSet = Sorts.insertion();
-                    sortComplete(sortedSet);
-                    break;
-                case "Bogosort":
-                    sortedSet = Sorts.bogosort();
-                    sortComplete(sortedSet);
-                    break;
-                case "Set Menu":
-                    setMenu();
-                    break;
-                case "Quit Program":
-                    runMenu = false;
-                    break;
-                default:
-                    System.out.println("Selection unavailable.");
-                    petc();
+
+            try {
+                switch (menuOpts[s-1]){ // Menu
+                    /* I should be able to optimize my menu commands to run sorts so I just need to write 
+                    * "sortComplete(Sorts.bubble());" or whatever, but right now I don't feel like doing that.
+                    */
+                    case "Bubble Sort":
+                        sortedSet = Sorts.bubble();
+                        sortComplete(sortedSet);
+                        break;
+                    case "Cocktail Shaker Sort":
+                        sortedSet = Sorts.selection();
+                        sortComplete(sortedSet);
+                        break;
+                    case "Selection Sort":
+                        sortedSet = Sorts.selection();
+                        sortComplete(sortedSet);
+                        break;
+                    case "Selection Sort w/ Max":
+                        sortedSet = Sorts.selectionAlt();
+                        sortComplete(sortedSet);
+                        break;
+                    case "Insertion Sort":
+                        sortedSet = Sorts.insertion();
+                        sortComplete(sortedSet);
+                        break;
+                    case "Bogosort":
+                        sortedSet = Sorts.bogosort();
+                        sortComplete(sortedSet);
+                        break;
+                    case "Set Menu":
+                        setMenu();
+                        break;
+                    case "Quit Program":
+                        runMenu = false;
+                        break;
+                    default:
+                        System.out.println("Selection unavailable.");
+                        petc();
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                continue;
             }
         }
         scan.close();
         System.exit(0);
     }
+
+    private static boolean menuCommands(String command) {
+        String s = command.substring(1);
+        //System.out.println(); // spacer
+        switch(s) {
+            case "view":
+                viewSet();
+                break;
+            case "shuffle":
+                shuffleSet();
+                break;
+            case "help":
+            case "h":
+                System.out.println("\nTo Add: Command Help Screen");
+                break;
+            default:
+                System.out.println("Unrecognized command " + s + ". Type /help to view a list of commands");
+                return false;
+        }
+        return true;
+    }
+
+    
 
     private static void setMenu(){
         String setMenuOpts[] = {"View Set","New Set","Shuffle Set","Sorting Stats","Back"};
@@ -120,8 +159,7 @@ public class App {
             
             switch (setMenuOpts[s-1]){ // Menu
                 case "View Set":
-                    System.out.println("\nSet -- Length "+set.length+": "+Arrays.toString(set));
-                    petc();
+                    viewSet();
                     break;
                 case "New Set":
                     generateSet();
@@ -143,6 +181,11 @@ public class App {
         }
         //scan.close();
         return;
+    }
+
+    private static void viewSet() { // TODO - make fancier
+        System.out.println("\nSet -- Length "+set.length+": "+Arrays.toString(set));
+        petc();
     }
 
     private static void defaultSet(){

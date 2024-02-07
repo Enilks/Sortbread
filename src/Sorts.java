@@ -92,7 +92,7 @@ public class Sorts{
     }
 
     public static int[] comb(){
-        int[] arr = App.set;
+        //int[] arr = App.set;
         lastSort = "Comb Sort";
         sortType = "Exchange";
         sortDesc = "A comb sort is a simple sorting algorithm that repeatedly\n"+
